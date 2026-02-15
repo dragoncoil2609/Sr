@@ -3,17 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Yêu em</title>
+    <title>Trái tim của anh</title>
     <style>
       :root {
         --bg1: #0b1220;
         --bg2: #121a2c;
-        --card: rgba(15, 23, 41, 0.78);
         --text: #eaf0ff;
         --muted: #b9c4e6;
         --pink: #fb7185;
         --pink2: #f472b6;
-        --border: #2a3a66;
+        --spark: rgba(255, 190, 210, 0.9);
       }
       * {
         box-sizing: border-box;
@@ -30,522 +29,221 @@
         background: radial-gradient(1200px 800px at 20% 20%, #1a2b55 0%, transparent 60%),
           radial-gradient(900px 700px at 90% 30%, #2a1b52 0%, transparent 55%),
           linear-gradient(160deg, var(--bg1), var(--bg2));
+        overflow: hidden;
       }
       .wrap {
         min-height: 100%;
-        display: grid;
-        place-items: center;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
         padding: 20px;
+        padding-bottom: clamp(26px, 6vh, 64px);
       }
-      .card {
-        width: min(920px, 96vw);
-        background: linear-gradient(180deg, rgba(17, 27, 51, 0.86), rgba(10, 16, 34, 0.86));
-        border: 1px solid var(--border);
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-        border-radius: 24px;
-        padding: 24px;
-        position: relative;
-        backdrop-filter: blur(10px);
-        overflow: hidden;
+      canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
       }
-      .glow {
-        position: absolute;
-        inset: -120px;
-        background: radial-gradient(closest-side at 20% 20%, rgba(244, 114, 182, 0.22), transparent 60%),
-          radial-gradient(closest-side at 80% 30%, rgba(251, 113, 133, 0.18), transparent 62%);
+      .vignette {
+        position: fixed;
+        inset: 0;
         pointer-events: none;
-        filter: blur(0px);
+        background: radial-gradient(60% 55% at 50% 42%, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.55) 78%),
+          radial-gradient(600px 520px at 50% 40%, rgba(244, 114, 182, 0.12), transparent 70%);
+        mix-blend-mode: screen;
       }
-      .grid {
+      .stage {
+        text-align: center;
+        width: min(760px, 96vw);
         display: grid;
-        grid-template-columns: 1.12fr 0.88fr;
-        gap: 18px;
-        align-items: center;
+        gap: 14px;
+        place-items: center;
+        position: relative;
+        z-index: 2;
       }
-      @media (max-width: 840px) {
-        .grid {
-          grid-template-columns: 1fr;
+      @media (max-height: 680px) {
+        .wrap {
+          padding-bottom: 18px;
         }
       }
       .title {
-        font-size: clamp(24px, 3vw, 40px);
-        line-height: 1.15;
-        margin: 0 0 10px 0;
-        letter-spacing: 0.2px;
-      }
-      .subtitle {
-        margin: 0 0 16px 0;
-        color: var(--muted);
-        font-size: 15px;
-        line-height: 1.6;
-      }
-      .actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-top: 14px;
-      }
-      a.cta,
-      button {
-        border: 0;
-        padding: 12px 18px;
-        border-radius: 14px;
-        font-weight: 800;
-        cursor: pointer;
-        font-size: 16px;
-        transition: transform 0.08s ease, filter 0.2s ease;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-      a.cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        text-decoration: none;
-        background: linear-gradient(180deg, #fb7185, #f43f5e);
-        color: #2a040a;
-      }
-      button.secondary {
-        background: rgba(10, 16, 34, 0.6);
-        color: var(--text);
-        border: 1px solid var(--border);
-      }
-      a.cta:active,
-      button:active {
-        transform: scale(0.98);
-      }
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: rgba(10, 16, 34, 0.55);
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .panel {
-        background: rgba(15, 23, 41, 0.55);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 16px;
-      }
-      .form {
-        display: grid;
-        gap: 10px;
-        margin-top: 12px;
-      }
-      .row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      @media (max-width: 520px) {
-        .row {
-          grid-template-columns: 1fr;
-        }
-      }
-      label {
-        display: grid;
-        gap: 6px;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      input,
-      textarea {
-        width: 100%;
-        border: 1px solid var(--border);
-        background: rgba(10, 16, 34, 0.55);
-        color: var(--text);
-        border-radius: 12px;
-        padding: 10px 12px;
-        outline: none;
-        font-size: 14px;
-      }
-      textarea {
-        min-height: 92px;
-        resize: vertical;
-      }
-      .screen {
-        display: none;
-      }
-      .screen.show {
-        display: block;
-      }
-      .heartStage {
-        display: grid;
-        place-items: center;
-        min-height: 320px;
-        position: relative;
-      }
-      .heart {
-        width: 180px;
-        height: 160px;
-        position: relative;
-        transform: rotate(-45deg);
-        background: linear-gradient(180deg, var(--pink2), var(--pink));
-        border-radius: 18px 18px 0 0;
-        box-shadow: 0 20px 70px rgba(244, 63, 94, 0.35);
-        animation: beat 0.9s ease-in-out infinite;
-      }
-      .heart::before,
-      .heart::after {
-        content: "";
-        position: absolute;
-        width: 180px;
-        height: 180px;
-        background: inherit;
-        border-radius: 50%;
-      }
-      .heart::before {
-        top: -90px;
-        left: 0;
-      }
-      .heart::after {
-        left: 90px;
-        top: 0;
-      }
-      @keyframes beat {
-        0% {
-          transform: rotate(-45deg) scale(1);
-          filter: saturate(1);
-        }
-        30% {
-          transform: rotate(-45deg) scale(1.06);
-          filter: saturate(1.1);
-        }
-        60% {
-          transform: rotate(-45deg) scale(0.98);
-          filter: saturate(1);
-        }
-        100% {
-          transform: rotate(-45deg) scale(1);
-          filter: saturate(1);
-        }
-      }
-      .stats {
-        display: grid;
-        gap: 8px;
-        margin-top: 14px;
-        text-align: center;
-      }
-      .days {
-        font-size: clamp(34px, 4.5vw, 56px);
+        margin: 0;
+        font-size: clamp(26px, 4vw, 46px);
         font-weight: 900;
-        letter-spacing: 0.5px;
-        margin: 0;
+        letter-spacing: 0.3px;
+        text-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        transform: translateY(10px);
+        animation: rise 900ms ease forwards;
+        animation-delay: 320ms;
       }
-      .line {
+      .poem {
         margin: 0;
         color: var(--muted);
-        line-height: 1.7;
-        font-size: 15px;
-      }
-      .toast {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 16px;
-        background: rgba(15, 23, 41, 0.92);
-        border: 1px solid var(--border);
-        color: var(--text);
-        padding: 10px 14px;
-        border-radius: 999px;
-        font-size: 14px;
+        font-size: 16px;
+        line-height: 1.8;
+        max-width: 54ch;
+        text-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
         opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.22s ease, transform 0.22s ease;
+        transform: translateY(10px);
+        animation: rise 900ms ease forwards;
+        animation-delay: 520ms;
       }
-      .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(-6px);
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .credit {
         position: fixed;
         right: 14px;
         top: 12px;
-        color: #92a2d5;
+        color: rgba(146, 162, 213, 0.75);
         font-size: 12px;
-        opacity: 0.72;
         user-select: none;
+        z-index: 3;
       }
     </style>
   </head>
   <body>
+    <canvas id="c"></canvas>
+    <div class="vignette"></div>
     <div class="credit">Made with love</div>
-    <div class="toast" id="toast">Đã copy link</div>
 
     <div class="wrap">
-      <div class="card">
-        <div class="glow"></div>
-
-        <section class="screen show" id="screenStart">
-          <div class="grid">
-            <div>
-              <div class="pill" id="pillStart">Một cú bấm là tim đập</div>
-              <h1 class="title" id="startTitle">Bấm link để mở trái tim của anh</h1>
-              <p class="subtitle" id="startSubtitle">
-                Khi bấm vào, sẽ hiện trái tim đang đập, đếm số ngày yêu em và lời chúc ngọt ngào.
-              </p>
-              <div class="actions">
-                <a class="cta" id="openLoveLink" href="#love">Bấm vào đây</a>
-                <button class="secondary" id="scrollConfigBtn" type="button">Chỉnh ngày + lời chúc</button>
-              </div>
-              <p class="subtitle" style="margin-top: 12px">
-                Mẹo: bạn có thể tạo link share dạng <span class="pill" style="padding: 4px 10px">?start=YYYY-MM-DD</span>
-              </p>
-            </div>
-
-            <div class="panel" id="configPanel">
-              <div class="pill">Tạo nội dung của riêng bạn</div>
-              <div class="form">
-                <div class="row">
-                  <label>
-                    Tên anh
-                    <input id="fromInput" type="text" placeholder="Anh" autocomplete="off" />
-                  </label>
-                  <label>
-                    Tên em
-                    <input id="toInput" type="text" placeholder="Em" autocomplete="off" />
-                  </label>
-                </div>
-                <div class="row">
-                  <label>
-                    Ngày bắt đầu yêu
-                    <input id="startDateInput" type="date" />
-                  </label>
-                  <label>
-                    Câu mở đầu
-                    <input id="headlineInput" type="text" placeholder="Yêu em là điều anh chọn mãi mãi." autocomplete="off" />
-                  </label>
-                </div>
-                <label>
-                  Lời chúc ngọt ngào
-                  <textarea id="wishInput" placeholder="Nhập lời chúc..."></textarea>
-                </label>
-                <div class="actions">
-                  <button class="secondary" id="previewBtn" type="button">Xem trước</button>
-                  <button id="copyLinkBtn" type="button">Copy link</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="screen" id="screenLove">
-          <div class="grid">
-            <div>
-              <div class="pill" id="pillLove">Trái tim của <span id="pillFrom">anh</span> dành cho <span id="pillTo">em</span></div>
-              <h2 class="title" id="loveHeadline">Yêu em là điều anh chọn mãi mãi.</h2>
-              <p class="subtitle" id="loveSubtitle">
-                Từ <b id="startDateText"></b> đến hôm nay, tụi mình đã yêu nhau được:
-              </p>
-              <p class="days"><span id="daysCount">0</span> ngày</p>
-              <p class="line" id="wishText"></p>
-              <div class="actions">
-                <a class="cta" href="#start" id="backBtn">Quay lại</a>
-                <button class="secondary" id="copyAgainBtn" type="button">Copy link này</button>
-              </div>
-            </div>
-            <div class="panel">
-              <div class="heartStage" aria-label="Trái tim đang đập">
-                <div class="heart"></div>
-                <div class="stats">
-                  <p class="line" id="miniLine"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
+      <main class="stage" aria-label="Trái tim đang đập">
+        <h1 class="title" id="title">Anh yêu em</h1>
+        <p class="poem" id="poem"></p>
+      </main>
     </div>
 
     <script>
-      const DEFAULTS = {
-        from: "Anh",
-        to: "Em",
-        start: "2025-02-14",
-        headline: "Yêu em là điều anh chọn mãi mãi.",
-        wish:
-          "Cảm ơn em vì đã đến, đã ở lại và đã thương anh. Anh hứa sẽ dịu dàng hơn, lắng nghe hơn, và yêu em nhiều hơn mỗi ngày.",
-      };
+      const params = new URL(location.href).searchParams;
+      const title = String(params.get("title") || "Anh yêu em").replace(/\s+/g, " ").trim().slice(0, 60);
+      const startStr = String(params.get("start") || "2025-09-05").trim().slice(0, 12);
+      const princess = String(params.get("princess") || "công chúa").replace(/\s+/g, " ").trim().slice(0, 24);
 
-      const $ = (s) => document.querySelector(s);
-      const toast = $("#toast");
-      const screenStart = $("#screenStart");
-      const screenLove = $("#screenLove");
-
-      const fromInput = $("#fromInput");
-      const toInput = $("#toInput");
-      const startDateInput = $("#startDateInput");
-      const headlineInput = $("#headlineInput");
-      const wishInput = $("#wishInput");
-
-      const pillFrom = $("#pillFrom");
-      const pillTo = $("#pillTo");
-      const loveHeadline = $("#loveHeadline");
-      const startDateText = $("#startDateText");
-      const daysCount = $("#daysCount");
-      const wishText = $("#wishText");
-      const miniLine = $("#miniLine");
-
-      function showToast(msg) {
-        toast.textContent = msg;
-        toast.classList.add("show");
-        clearTimeout(showToast._t);
-        showToast._t = setTimeout(() => toast.classList.remove("show"), 900);
+      function startOfLocalDay(d) {
+        const [y, m, day] = d.split("-").map((x) => Number(x));
+        return new Date(y, m - 1, day, 0, 0, 0, 0);
+      }
+      function addMonths(date, months) {
+        const y = date.getFullYear();
+        const m = date.getMonth();
+        const d = date.getDate();
+        const target = new Date(y, m + months, 1, 0, 0, 0, 0);
+        const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+        target.setDate(Math.min(d, lastDay));
+        return target;
+      }
+      function diffMonthsDays(start, end) {
+        let months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+        let anchor = addMonths(start, months);
+        if (anchor.getTime() > end.getTime()) {
+          months -= 1;
+          anchor = addMonths(start, months);
+        }
+        const days = Math.max(0, Math.floor((end.getTime() - anchor.getTime()) / 86400000));
+        return { months: Math.max(0, months), days };
       }
 
-      function parseParams() {
-        const u = new URL(location.href);
-        const p = u.searchParams;
-        return {
-          from: p.get("from") || "",
-          to: p.get("to") || "",
-          start: p.get("start") || "",
-          headline: p.get("headline") || "",
-          wish: p.get("wish") || "",
-        };
-      }
-
-      function safeText(s, max = 260) {
-        return String(s || "").replace(/\s+/g, " ").trim().slice(0, max);
-      }
-
-      function formatDateVN(yyyyMmDd) {
-        const [y, m, d] = yyyyMmDd.split("-").map((x) => Number(x));
-        if (!y || !m || !d) return yyyyMmDd;
-        const dt = new Date(y, m - 1, d);
-        return dt.toLocaleDateString("vi-VN", { year: "numeric", month: "2-digit", day: "2-digit" });
-      }
-
-      function startOfLocalDay(yyyyMmDd) {
-        const [y, m, d] = yyyyMmDd.split("-").map((x) => Number(x));
-        return new Date(y, m - 1, d, 0, 0, 0, 0);
-      }
-
-      function computeDays(startDateStr) {
-        const start = startOfLocalDay(startDateStr);
+      function buildLine() {
+        const start = startOfLocalDay(startStr);
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-        const diff = today.getTime() - start.getTime();
-        return Math.max(0, Math.floor(diff / 86400000) + 1);
+        const { months, days } = diffMonthsDays(start, today);
+        return `Mình đã yêu nhau ${months} tháng ${days} ngày, tình yêu đó sẽ không đổi và lớn dần theo thời gian. Yêu em lắm ${princess} của anh.`;
       }
 
-      function getState() {
-        const params = parseParams();
-        return {
-          from: safeText(params.from) || safeText(localStorage.getItem("love_from")) || DEFAULTS.from,
-          to: safeText(params.to) || safeText(localStorage.getItem("love_to")) || DEFAULTS.to,
-          start: safeText(params.start, 12) || safeText(localStorage.getItem("love_start"), 12) || DEFAULTS.start,
-          headline:
-            safeText(params.headline, 90) || safeText(localStorage.getItem("love_headline"), 90) || DEFAULTS.headline,
-          wish: safeText(params.wish, 500) || safeText(localStorage.getItem("love_wish"), 500) || DEFAULTS.wish,
+      document.getElementById("title").textContent = title;
+      document.getElementById("poem").textContent = buildLine();
+
+      setInterval(() => {
+        document.getElementById("poem").textContent = buildLine();
+      }, 60_000);
+
+      const canvas = document.getElementById("c");
+      const ctx = canvas.getContext("2d");
+      const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      function resize() {
+        canvas.width = Math.floor(window.innerWidth * DPR);
+        canvas.height = Math.floor(window.innerHeight * DPR);
+      }
+      resize();
+      window.addEventListener("resize", resize, { passive: true });
+
+      function heartPoint(t) {
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y =
+          13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        return { x, y };
+      }
+
+      const COUNT = 1800;
+      const pts = new Array(COUNT);
+      for (let i = 0; i < COUNT; i++) {
+        const t = Math.random() * Math.PI * 2;
+        const p = heartPoint(t);
+        const jitter = 0.25 + Math.random() * 0.75;
+        pts[i] = {
+          tx: p.x * jitter,
+          ty: p.y * jitter,
+          x: 0,
+          y: 0,
+          vx: 0,
+          vy: 0,
+          r: 0.7 + Math.random() * 1.8,
+          a: 0.35 + Math.random() * 0.55,
+          hue: 345 + Math.random() * 18,
         };
       }
 
-      function setForm(state) {
-        fromInput.value = state.from;
-        toInput.value = state.to;
-        startDateInput.value = state.start;
-        headlineInput.value = state.headline;
-        wishInput.value = state.wish;
-      }
+      let t0 = performance.now();
+      function tick(now) {
+        const w = canvas.width;
+        const h = canvas.height;
+        const t = (now - t0) / 1000;
 
-      function persistFromForm() {
-        localStorage.setItem("love_from", safeText(fromInput.value) || DEFAULTS.from);
-        localStorage.setItem("love_to", safeText(toInput.value) || DEFAULTS.to);
-        localStorage.setItem("love_start", safeText(startDateInput.value, 12) || DEFAULTS.start);
-        localStorage.setItem("love_headline", safeText(headlineInput.value, 90) || DEFAULTS.headline);
-        localStorage.setItem("love_wish", safeText(wishInput.value, 500) || DEFAULTS.wish);
-      }
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(0,0,0,0.22)";
+        ctx.fillRect(0, 0, w, h);
 
-      function buildShareUrl() {
-        const u = new URL(location.href);
-        u.hash = "#love";
-        u.searchParams.set("from", safeText(fromInput.value) || DEFAULTS.from);
-        u.searchParams.set("to", safeText(toInput.value) || DEFAULTS.to);
-        u.searchParams.set("start", safeText(startDateInput.value, 12) || DEFAULTS.start);
-        u.searchParams.set("headline", safeText(headlineInput.value, 90) || DEFAULTS.headline);
-        u.searchParams.set("wish", safeText(wishInput.value, 500) || DEFAULTS.wish);
-        return u.toString();
-      }
+        const cx = w * 0.5;
+        const cy = h * 0.42;
+        const beat = 1 + 0.055 * Math.sin(t * 6.2) + 0.015 * Math.sin(t * 12.4);
+        const scale = Math.min(w, h) * 0.022 * beat;
 
-      async function copyText(text) {
-        try {
-          await navigator.clipboard.writeText(text);
-          showToast("Đã copy link");
-        } catch {
-          const ta = document.createElement("textarea");
-          ta.value = text;
-          ta.style.position = "fixed";
-          ta.style.left = "-9999px";
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          ta.remove();
-          showToast("Đã copy link");
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < COUNT; i++) {
+          const p = pts[i];
+          const tx = cx + p.tx * scale;
+          const ty = cy - p.ty * scale;
+
+          const ax = (tx - p.x) * 0.035;
+          const ay = (ty - p.y) * 0.035;
+          p.vx = (p.vx + ax) * 0.86;
+          p.vy = (p.vy + ay) * 0.86;
+          p.x += p.vx + Math.sin(t * 2 + i) * 0.02;
+          p.y += p.vy + Math.cos(t * 2.2 + i) * 0.02;
+
+          const flick = 0.65 + 0.35 * Math.sin(t * 8 + i * 0.017);
+          ctx.fillStyle = `hsla(${p.hue}, 90%, 70%, ${p.a * flick})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * DPR, 0, Math.PI * 2);
+          ctx.fill();
         }
+
+        ctx.globalCompositeOperation = "screen";
+        ctx.fillStyle = "rgba(255, 190, 210, 0.04)";
+        ctx.fillRect(0, 0, w, h);
+
+        requestAnimationFrame(tick);
       }
-
-      function renderLove(state) {
-        pillFrom.textContent = state.from;
-        pillTo.textContent = state.to;
-        loveHeadline.textContent = state.headline;
-        startDateText.textContent = formatDateVN(state.start);
-        wishText.textContent = state.wish;
-        miniLine.textContent = `Anh thương ${state.to} nhiều hơn mỗi ngày.`;
-      }
-
-      let timer = null;
-      function updateCounter(state) {
-        daysCount.textContent = String(computeDays(state.start));
-      }
-
-      function showScreen(id) {
-        if (id === "love") {
-          screenStart.classList.remove("show");
-          screenLove.classList.add("show");
-        } else {
-          screenLove.classList.remove("show");
-          screenStart.classList.add("show");
-        }
-      }
-
-      function syncByHash() {
-        const hash = (location.hash || "#start").replace("#", "");
-        const state = getState();
-        setForm(state);
-        renderLove(state);
-        updateCounter(state);
-        clearInterval(timer);
-        timer = setInterval(() => updateCounter(getState()), 20_000);
-        showScreen(hash === "love" ? "love" : "start");
-      }
-
-      $("#scrollConfigBtn").addEventListener("click", () => {
-        $("#configPanel").scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-      $("#previewBtn").addEventListener("click", () => {
-        persistFromForm();
-        location.hash = "#love";
-        syncByHash();
-      });
-      $("#copyLinkBtn").addEventListener("click", async () => {
-        persistFromForm();
-        await copyText(buildShareUrl());
-      });
-      $("#copyAgainBtn").addEventListener("click", async () => {
-        await copyText(buildShareUrl());
-      });
-      window.addEventListener("hashchange", syncByHash);
-
-      const state = getState();
-      setForm(state);
-      renderLove(state);
-      syncByHash();
+      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      requestAnimationFrame(tick);
     </script>
   </body>
 </html>
